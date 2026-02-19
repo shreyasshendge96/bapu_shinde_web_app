@@ -115,12 +115,103 @@
       font-size: 0.9rem;
     }
 
+    .social-sidebar {
+      position: fixed;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      z-index: 1000;
+      background: rgba(30, 30, 30, 0.75);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 50px;
+      padding: 12px 8px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .social-sidebar a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      color: #e0e0e0;
+      text-decoration: none;
+      font-size: 1.1rem;
+      transition: background 0.3s ease, color 0.3s ease, transform 0.3s ease;
+    }
+
+    .social-sidebar a:hover {
+      transform: scale(1.2);
+    }
+
+    .social-sidebar .fb:hover {
+      background-color: #1877f2;
+      color: white;
+    }
+
+    .social-sidebar .ig:hover {
+      background: linear-gradient(135deg, #f58529, #dd2a7b, #8134af);
+      color: white;
+    }
+
+    .social-sidebar .yt:hover {
+      background-color: #ff0000;
+      color: white;
+    }
+
     @media screen and (max-width: 768px) {
-      .form-container {
-        padding: 1.5rem;
-        margin-top: -2rem;
-        margin-left: 1rem;
-        margin-right: 1rem;
+      .social-sidebar {
+        left: 10px;
+        top: auto;
+        bottom: 6rem;
+        transform: none;
+        padding: 8px 6px;
+        gap: 4px;
+      }
+
+      .social-sidebar a {
+        width: 32px;
+        height: 32px;
+        font-size: 0.95rem;
+      }
+    }
+
+    .whatsapp-float {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background-color: #25d366;
+      color: white;
+      border-radius: 50px;
+      padding: 0.8rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .whatsapp-float:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      color: white;
+    }
+
+    @media screen and (max-width: 768px) {
+      .whatsapp-float {
+        bottom: 1.5rem;
+        right: 1.5rem;
+        padding: 0.6rem 1.2rem;
+        font-size: 0.9rem;
       }
     }
   </style>
@@ -257,13 +348,32 @@
             style="display: none; margin-top: 20px; padding: 15px; border-radius: 8px; font-weight: bold; text-align: center;">
           </div>
 
-          <div class="footer-note">
-            मल गुगल शीटमध्ये समान नाव कॉन्फिगर करायचे आहे
+          <div class="footer-note mt-4">
+            मला गुगल शीटमध्ये समान नाव कॉन्फिगर करायचे आहे
           </div>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- Floating Social Sidebar (Left) -->
+  <div class="social-sidebar">
+    <a href="https://www.facebook.com/share/16guxBNuxe/" target="_blank" class="fb" title="Facebook">
+      <i class="fab fa-facebook-f"></i>
+    </a>
+    <a href="https://www.instagram.com/amol_bapu_shinde_?igsh=bXdhOXltazl4NDA4" target="_blank" class="ig"
+      title="Instagram">
+      <i class="fab fa-instagram"></i>
+    </a>
+    <a href="https://youtube.com/@amolbapushinde?si=EwhbiVq60nCHTLYu" target="_blank" class="yt" title="YouTube">
+      <i class="fab fa-youtube"></i>
+    </a>
+  </div>
+
+  <a href="https://wa.me/919923199499" class="whatsapp-float" target="_blank">
+    <i class="fab fa-whatsapp"></i>
+    <span>Chat with us</span>
+  </a>
 
   <script>
     const form = document.getElementById("form");
