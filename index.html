@@ -184,34 +184,35 @@
 
     .whatsapp-float {
       position: fixed;
-      bottom: 2rem;
-      right: 2rem;
+      top: 1rem;
+      right: 1rem;
       background-color: #25d366;
       color: white;
       border-radius: 50px;
-      padding: 0.8rem 1.5rem;
+      padding: 0.6rem 1.2rem;
       display: flex;
       align-items: center;
-      gap: 0.8rem;
+      gap: 0.6rem;
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-      z-index: 1000;
+      z-index: 1100;
       text-decoration: none;
       font-weight: 600;
+      font-size: 0.9rem;
       transition: all 0.3s ease;
     }
 
     .whatsapp-float:hover {
-      transform: translateY(-5px);
+      transform: translateY(-3px);
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
       color: white;
     }
 
     @media screen and (max-width: 768px) {
       .whatsapp-float {
-        bottom: 1.5rem;
-        right: 1.5rem;
-        padding: 0.6rem 1.2rem;
-        font-size: 0.9rem;
+        top: 0.7rem;
+        right: 0.7rem;
+        padding: 0.5rem 0.9rem;
+        font-size: 0.8rem;
       }
     }
   </style>
@@ -307,19 +308,24 @@
             <div class="field">
               <label class="label">Upload Image / प्रतिमा अपलोड करा</label>
               <div class="control">
-                <div class="file has-name is-fullwidth">
-                  <label class="file-label">
+                <div class="file is-fullwidth" style="flex-direction:column; align-items:stretch;">
+                  <label class="file-label" style="display:flex; flex-wrap:wrap; gap:0.5rem;">
                     <input class="file-input" type="file" name="theFile" id="fileInput" accept="image/*" />
-                    <span class="file-cta">
+                    <span class="file-cta" style="flex:1; min-width:150px; justify-content:center;">
                       <span class="file-icon">
                         <i class="fas fa-cloud-upload-alt"></i>
                       </span>
                       <span class="file-label"> प्रतिमा निवडा (Choose Image) </span>
                     </span>
-                    <span class="file-name" id="fileNameDisplay">
+                    <span class="file-name" id="fileNameDisplay"
+                      style="flex:2; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; display:flex; align-items:center; padding:0.5em 0.75em; background:#f8f9fa; border:1px solid #dcdde1; border-radius:8px;">
                       No image selected
                     </span>
                   </label>
+                  <div id="imagePreviewWrap" style="display:none; margin-top:0.75rem;">
+                    <img id="imagePreview" src="" alt="Preview"
+                      style="max-width:100%; max-height:200px; border-radius:8px; border:1px solid #dcdde1; object-fit:contain; display:block;" />
+                  </div>
                 </div>
               </div>
             </div>
@@ -383,10 +389,22 @@
     const fileNameDisplay = document.getElementById("fileNameDisplay");
 
     fileInput.addEventListener("change", function () {
+      const previewWrap = document.getElementById("imagePreviewWrap");
+      const previewImg = document.getElementById("imagePreview");
       if (this.files && this.files.length > 0) {
-        fileNameDisplay.textContent = this.files[0].name;
+        const file = this.files[0];
+        fileNameDisplay.textContent = file.name;
+        // Show image preview
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          previewImg.src = e.target.result;
+          previewWrap.style.display = "block";
+        };
+        reader.readAsDataURL(file);
       } else {
-        fileNameDisplay.textContent = "No file selected";
+        fileNameDisplay.textContent = "कोणतीही प्रतिमा निवडली नाही (No image selected)";
+        previewWrap.style.display = "none";
+        previewImg.src = "";
       }
     });
 
@@ -410,10 +428,52 @@
     form.addEventListener("submit", async function (e) {
       e.preventDefault();
 
-      messageDiv.textContent = "सबमिट होत आहे... (Submitting...)";
+      // --- Validation ---
+      const nameVal = form.querySelector('[name="Name"]').value.trim();
+      const ageVal = form.querySelector('[name="Age"]').value.trim();
+      const mobileVal = form.querySelector('[name="Mobile Number"]').value.trim();
+      const addressVal = form.querySelector('[name="Address"]').value.trim();
+      const workAddressVal = form.querySelector('[name="Work Address"]').value.trim();
+      const problemVal = form.querySelector('[name="Problem Description"]').value.trim();
+
+      function showError(msg) {
+        messageDiv.textContent = msg;
+        messageDiv.style.display = "block";
+        messageDiv.style.backgroundColor = "#fff3cd";
+        messageDiv.style.color = "#856404";
+        messageDiv.style.border = "1px solid #ffc107";
+      }
+
+      if (!nameVal) {
+        showError("⚠️ कृपया तुमचे नाव प्रविष्ट करा. (Please enter your Name.)");
+        return;
+      }
+      if (!ageVal || isNaN(ageVal) || ageVal < 1 || ageVal > 99) {
+        showError("⚠️ कृपया वैध वय प्रविष्ट करा (1–99). (Please enter a valid Age between 1 and 99.)");
+        return;
+      }
+      if (!mobileVal || !/^[0-9]{10}$/.test(mobileVal)) {
+        showError("⚠️ कृपया 10 अंकी मोबाईल नंबर प्रविष्ट करा. (Please enter a valid 10-digit Mobile Number.)");
+        return;
+      }
+      if (!addressVal) {
+        showError("⚠️ कृपया तुमचा पत्ता प्रविष्ट करा. (Please enter your Address.)");
+        return;
+      }
+      if (!workAddressVal) {
+        showError("⚠️ कृपया कामाचा पत्ता प्रविष्ट करा. (Please enter your Work Address.)");
+        return;
+      }
+      if (!problemVal) {
+        showError("⚠️ कृपया समस्येचे वर्णन करा. (Please describe the Problem.)");
+        return;
+      }
+
+      messageDiv.textContent = "⏳ सबमिट होत आहे, कृपया थांबा... (Submitting, please wait...)";
       messageDiv.style.display = "block";
       messageDiv.style.backgroundColor = "#fff9db";
       messageDiv.style.color = "#856404";
+      messageDiv.style.border = "1px solid #ffd43b";
       submitButton.disabled = true;
       submitButton.classList.add("is-loading");
 
@@ -447,19 +507,31 @@
         const data = await response.json();
 
         if (data.status === "success") {
-          messageDiv.textContent = "माहिती यशस्वीरित्या जतन केली! (Data submitted successfully!)";
+          messageDiv.textContent = "✅ माहिती यशस्वीरित्या जतन केली! (Data submitted successfully!)";
           messageDiv.style.backgroundColor = "#48c78e";
           messageDiv.style.color = "white";
+          messageDiv.style.border = "none";
           form.reset();
-          fileNameDisplay.textContent = "No file selected";
+          fileNameDisplay.textContent = "कोणतीही प्रतिमा निवडली नाही (No image selected)";
+          document.getElementById("imagePreviewWrap").style.display = "none";
+          document.getElementById("imagePreview").src = "";
         } else {
           throw new Error(data.message || "Submission failed");
         }
       } catch (error) {
         console.error("Error:", error);
-        messageDiv.textContent = "त्रुटी: " + error.message;
+        let errMsg = error.message || "";
+        if (errMsg.includes("Failed to fetch") || errMsg.includes("NetworkError") || errMsg.includes("network")) {
+          errMsg = "❌ इंटरनेट कनेक्शन नाही. कृपया नेटवर्क तपासा आणि पुन्हा प्रयत्न करा. (No internet connection. Please check your network and try again.)";
+        } else if (errMsg.includes("timeout") || errMsg.includes("Timeout")) {
+          errMsg = "❌ सर्व्हर प्रतिसाद देत नाही. कृपया काही वेळाने पुन्हा प्रयत्न करा. (Server not responding. Please try again after some time.)";
+        } else {
+          errMsg = "❌ त्रुटी आली: " + errMsg + " | कृपया पुन्हा प्रयत्न करा. (Error occurred. Please try again.)";
+        }
+        messageDiv.textContent = errMsg;
         messageDiv.style.backgroundColor = "#f14668";
         messageDiv.style.color = "white";
+        messageDiv.style.border = "none";
       } finally {
         submitButton.disabled = false;
         submitButton.classList.remove("is-loading");
@@ -467,13 +539,15 @@
         setTimeout(() => {
           messageDiv.textContent = "";
           messageDiv.style.display = "none";
-        }, 5000);
+        }, 7000);
       }
     });
 
     document.getElementById("cancel-button").addEventListener("click", function () {
       form.reset();
-      fileNameDisplay.textContent = "No file selected";
+      fileNameDisplay.textContent = "कोणतीही प्रतिमा निवडली नाही (No image selected)";
+      document.getElementById("imagePreviewWrap").style.display = "none";
+      document.getElementById("imagePreview").src = "";
       messageDiv.style.display = "none";
     });
   </script>
